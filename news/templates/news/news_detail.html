@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+
+{% block title %} 世界 {% endblock %}
+
+{%block content %}
+  <div class="pager">
+      <p>{{ news_paper.title }}</p>
+      <p>{{ news_paper.content }}</p>
+
+  </div>
+
+{% endblock %}

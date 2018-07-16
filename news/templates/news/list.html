@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+<link rel="shortcut icon" href="{% static " images/favicon_1.ico " %}">
+{% block title %}新鲜事{% endblock %}
+<link rel="stylesheet" href="{% static "css/bootstrap.css" %}">
+<link rel="stylesheet" href="{% static "css/bootstrap.min.css" %}">
+<link rel="stylesheet" href="{% static "css/news_list.css" %}">
+<!-- <link rel="stylesheet" href="../../static/css/bootstrap.css">
+<link rel="stylesheet" href="../../static/css/news_list.css"> -->
+<style>
+
+
+</style>
+
+<body id="app">
+    {% block content %}
+    <div class="col-1 left-colum">
+        <nav class="navbar bg-secondary navbar-dark">
+            <ul class="navbar-nav">
+
+                <li class="nav-item">
+                    <img src="{% static "images/logo.png" %}" style="width:100px">
+                </li>
+                <li class="nav-item">推荐</li>
+                <li class="nav-item">热点</li>
+                <li class="nav-item">图片</li>
+                <li class="nav-item">科技</li>
+                <li class="nav-item">娱乐</li>
+                <li class="nav-item">游戏</li>
+                <li class="nav-item">体育</li>
+                <li class="nav-item">汽车</li>
+                <li class="nav-item">财经</li>
+                <li class="nav-item">搞笑</li>
+                <li class="nav-item">更多</li>
+
+            </ul>
+        </nav>
+    </div>
+
+    <div class="container">
+        {% for new in news %}
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">{{new.title}}</h4>
+                <p class="card-text">{{ new.content|truncatewords:100 }}</p>
+                <a href="?tag={{ new.tag }}">{{ new.tag }}</a>
+            </div>
+    </div>
+
+        {% endfor %}
+    </div>
+
+    {% endblock %}
+
+
+</body>

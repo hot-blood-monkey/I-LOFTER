@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}新鲜事{% endblock %}
+
+{% block content %}
+
+    <form action="." method="post">
+    {{ form.as_p }}
+    {% csrf_token %}
+    <p>
+        <input type="submit" value="登录">
+    </p>
+    </form>
+
+<li class="google"><a href="{% url "social:begin" backend="google-oauth2" %}">Login with Google</a></li>
+
+{% endblock %}

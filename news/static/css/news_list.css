@@ -1,0 +1,13 @@
+@import url(http://fonts.googleapis.com/css?family=Muli);
+
+.left-colum {
+    list-style:none;
+    width:50px;
+    bottom:80px;
+    left: 50px;
+}
+
+.mycard{
+    top:100px;
+}
+

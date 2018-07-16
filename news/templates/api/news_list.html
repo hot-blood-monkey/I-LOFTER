@@ -1,0 +1,176 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% block title %}I le hu{% endblock %}
+<style>
+    .touxiang{
+        float:left;
+
+    }
+    img{
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+</style>        
+        
+{% block content %}
+
+
+    {% verbatim %}
+    <div class="mycard" id="app">
+        <div class="container" v-for="vid in vids" style="margin-top: 50px;">
+            <!-- 用户头像 -->
+            <div class="col-1">
+                <img :src="vid.image" alt="" class="rounded-circle" style="width: 100px;float: left;">        
+            </div>
+            
+            <!-- 卡片列表 -->
+            <div class="card bg-secondary text-white">
+                <div class="card-body">
+                    <h4 class="card-title">{{vid.title}}</h4>
+                    <div class="card-header">
+                        <p>{{vid.created}}</p>
+                        <p>{{vid.user}}</p>
+                    </div>
+                    <p class="card-text">{{ vid.content|truncatewords:100 }}</p>
+                    
+                    <img :src="vid.image_url" alt="">
+                    <img :src="vid.image" alt="">
+                    <!-- <a href="?tag={{ vid.tag }}">{{ vids.tag }}</a> -->
+                </div>
+                <div class="card-footer">
+                    <div class="row">
+                        <button class="col-1" @click="agree(vid)">点赞 {{vid.good_times}}</button>
+                        <button class="col-1" @click="disagree">拉黑 {{vid.bad_times}}</button>
+                        <button class="col-1" @click="change_comment">评论</button>
+                    </div>
+                    <div v-show="comments_show">
+                        <input type="text" v-model="comment">
+                        <button type="submit" @click="creatComment(vid)">OK</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% endverbatim %}
+
+    <script>
+
+        var vm = new Vue({
+            el:"#app",
+            data:{
+                message:'',
+                show:false,
+                chosen:"all",
+                comment:"",
+                comments_show:false,
+                vids:[],
+
+            },
+            methods:{
+                agree:function(data) {                    
+                    data.good_times += 1;
+                    // console.log("goodtimes");
+                    // console.log(data.good_times);
+                    vm.sendData(data);
+                    
+                },
+                disagree:function(data) {
+                    data.bad_times +=1;
+                    vm.sendData(data);
+                },
+
+                //通过状态值 改变评论栏是否 出现
+                change_comment:function(){
+                    vm.comments_show = !vm.comments_show;
+                },
+
+                //发送创建评论
+                creatComment:function(vid){
+                    console.log("vid.id is "+vid.id);
+                    axios({
+                        url:"/api/comments/",
+                        method:"post",
+                        headers:Cookies.get('token')? {'Authorization': 'Token ' + Cookies.get('token')}:{},
+                        data:{
+                            name:Cookies.get('username')? Cookies.get('username'):'',
+                            body:vm.comment,
+                            news_id:2,
+
+                        }
+                    })
+                },
+
+                getData:function () {
+                    var self = this;
+
+                    // reqwest({
+                    //     url:'http://127.0.0.1:8000/api/news_list/',
+                    //     type:'json',
+                    //     method:'get',
+                    //     headers:Cookies.get('token')? {'Authorization': 'Token ' + Cookies.get('token')}:{},
+
+                    //     success:function (resp) {
+                    //         self.vids = resp;
+
+                    //     }
+                    // })
+                    // reqwest 已验证是可以行的
+
+                    axios({
+                        url:'/api/news_list/',
+                        method:'get',
+                        headers:Cookies.get('token')? {'Authorization': 'Token ' + Cookies.get('token')}:{},
+                    }).then(
+                        function(response){
+                            self.vids = response.data;
+                            
+                            console.log("成功取回数据");
+                            console.log(response.data);
+                        }
+                    ).catch(
+                        function(error){
+                            console.log("发生错误，如下：");
+                            console.log(error);
+                        }
+
+                    )   
+                },
+
+                sendData:function(Data){
+                    console.log("看到user_id");
+                    console.log(Data);
+                    console.log(Data.user.id);
+                    var self = this;
+                    axios({
+                        url:"/api/news_card/",
+                        method:"put",
+                        headers:Cookies.get('token')?{'Authorization': 'Token ' + Cookies.get('token')}:{},
+                        data:{
+                            title:Data.title,
+                            id:Data.user.id,
+                            username:Data.user.username,
+                            good_times:Data.good_times,
+                            bad_times:Data.bad_times,
+                        }
+                    }).then(
+                        function(response){
+                            console.log("修改成功");
+                        }
+                    ).catch(
+                        function(error){
+                            console.log(error);
+                        }
+                    )                        
+                },
+
+            },
+            ready:function () {
+                this.getData()
+            }
+        })
+    </script>
+    
+{% endblock %}
+        

@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/4.0.0-beta/css/bootstrap.min.css">
+    <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/popper.js/1.12.5/umd/popper.min.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
+    
+    <script src="{% static 'js/vue.js' %}"></script>
+    <!-- 映入 vue vue-router reqwest axios cookie 等js文件   引入cookie.js 来对cookie操作-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/1.0.28/vue.js"></script>
+    <script src="https://unpkg.com/vue-router/dist/vue-router.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reqwest/2.0.5/reqwest.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/2.1.3/js.cookie.js"></script>
+        
+    <link rel="shortcut icon" href="{% static 'images/favicon_1.ico' %}">
+    <title>注册</title>
+    
+    <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/news_list.css' %}">
+</head>
+
+
+<body id="app">
+
+    {% verbatim %}
+
+    <nav class="navbar navbar-expand-xl bg-success navbar-light" role="navigation" >
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a href="#" class="navbar-brand">新鲜事</a>
+            </div>
+        </div>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav nav-tabs">
+                <li class="nav-item active">APP</li>
+
+                <li class="nav-item">天气</li>
+                <div v-if="loginshow">
+                    <li class="nav-item"  >
+                        <!-- <a href="{% url "account:login" %}">登录</a> -->
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myLogin">登录</button>
+                    </li>
+                    <li class="nav-item">
+                        <!-- <a href="{% url "account:register" %}">注册</a> -->
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myRegister">注册</button>
+                    </li>
+                </div>
+                <div v-else>
+                    <li class="nav-item" >
+                        <button> 你好！ {{cur_user}} 。</button>
+                    </li>
+                    <li class="nav-item">
+                        <button>退出</button>
+                    </li>
+                </div>
+            </ul>
+
+        </div>
+    </nav>
+
+    <div class="col-auto">
+        <div class="panel">
+            <router-view></router-view>
+        </div>
+    </div>
+    
+    
+<!-- 登录 -->
+    <div class="modal fade" id="myLogin">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!-- 模态框头部 -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Login User</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <!-- 内容 -->
+                <div class="modal-body">
+                    <form action="." method="POST">
+                        
+                        <div class="form-group">
+                            <label for="userlogin">用户名</label>
+                            <input type="text" id="user-login" v-model="username" placeholder="请输入用户名">
+                        </div>
+                        <div class="form-group">
+                            <label for="pwd-login">密码</label>
+                            <input type="password" id="pwd-login" v-model="password" placeholder="请输入密码">
+                        </div>
+                    </form>
+                </div>
+
+                <!-- 底部 -->
+                <div class="modal-footer">
+                    <button @click="login()" class="btn btn-primary" >登录</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal fade" id="myRegister">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">注册</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    <form action="." method="POST">
+                            {% csrf_token %}
+                        <div class="form-group">
+                            <label for="user">用户名</label>
+                            <input type="text" id="user" v-model="newuser.username" placeholder="请输入用户名">
+                        </div>
+                        <div class="form-group">
+                            <label for="pwd">密码</label>
+                            <input type="password" id="pwd" v-model="newuser.password" placeholder="请输入密码">
+                        </div>
+                        <div class="form-group">
+                            <label for="pwd2">重复密码</label>
+                            <input type="password" id="pwd2" v-model="newuser.password2" placeholder="请重复输入密码">
+                        </div>
+                        <div class="form-group">
+                                <label for="email">邮箱</label>
+                                <input type="email" id="email" v-model="newuser.email" placeholder="请输入邮箱">
+                            </div>                                     
+                    </form>
+                </div>
+
+                <div class="modal-footer">
+                    <button @click="register()" type="submit" class="btn btn-primary">注册</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% endverbatim %}
+
+    <script>
+        var test = new Vue({
+            el:"#app",
+            data:{
+                users:[],
+                newuser:{username:'',password:null,password2:null,email:null},
+                loginshow:true,
+                cur_user:'',
+                username:'',
+                password:null,
+
+            },
+            methods: {
+                getUserData(){
+                    var self = this;
+                    
+                    axios.get('/api/users_list/').then(
+                        function(response){
+                            console.log(response.data);
+                            
+
+                        }).catch(
+                            function(error){
+                                console.log(error);
+                            }
+                        )
+                },
+                login(){
+                    var self = this;
+                    
+                    axios.post('/api/users_list/',{
+                        username:this.username,
+                        password:this.password,
+                    }).then(
+                        function(response){
+                            console.log(response.data);
+                            test.cur_user = response.data['username'];
+                            test.loginshow = false;                               
+                        }).catch(
+                            function(error){
+                                console.log(error);
+                            }
+                        )
+                },
+                register(){
+
+                    if(this.newuser.username===''){
+                        alert("姓名不能为空");
+                        return;
+                    }
+
+                    if(this.newuser.email===''){
+                        alert("邮箱不能为空");
+                        return;
+                    }
+
+                    if(this.newuser.password===''){
+                        alert("密码不能为空");
+                        return;
+                    }
+
+                    if(this.newuser.password2===''){
+                        alert("密码不能为空");
+                        return;
+                    }
+
+                    if(this.newuser.password===this.newuser.password2){
+                        alert("两次密码不一致");
+                        return;
+                    }
+
+                    axios.post('/api/users_list/',{
+                        username:this.newuser.username,
+                        password:this.newuser.password,
+                        email:this.newuser.email,    
+                    }).then(
+                        function(response){
+                            console.log(response.data);
+                        }).catch(function(error){
+                            console.log(error);
+                        }
+                    )
+                }
+
+            },
+            // ready:function(){
+            //     this.getUserData();
+            // }
+
+        })                   
+    </script>
+</body>
+
+</html>

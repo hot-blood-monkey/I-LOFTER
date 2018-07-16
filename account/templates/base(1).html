@@ -1,0 +1,42 @@
+{% load staticfiles %}
+
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="shortcut icon" href="{% static "images/favicon_1.ico" %}">
+    <title>{% block title %}{% endblock %}</title>
+
+    <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+</head>
+<body>
+    <nav class="navbar navbar-expand-xl bg-success navbar-light" role="navigation">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a href="#" class="navbar-brand">新鲜事</a>
+            </div>
+        </div>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav nav-tabs">
+                <li class="nav-item active">APP</li>
+
+                <li class="nav-item">天气</li>
+                <li class="nav-item">
+                    <a href="{% url "account:login" %}">登录</a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url "account:register" %}">注册</a>
+                </li>
+            </ul>
+
+        </div>
+
+    </nav>
+
+    <div id="content">
+
+        {% block content %}
+        {% endblock %}
+    </div>
+</body>

@@ -1,0 +1,315 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+<style>
+    .rt{
+        top: 100px;
+        border: 1px solid black;
+        margin: 100px;
+        height:500px;
+        float: left;
+    }
+
+
+</style>
+{% block title %}登录/注册{% endblock %}
+
+{% block content %}
+<div id="app">
+
+    <div class="container tt" style="top: 200px">
+        <ul class="nav nav-pills"  role="tablist">
+            
+            <li class="nav-item">
+                <a class="nav-link active" data-toggle="pill" href="#login">登录</a>
+                
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="pill" href="#register">注册</a>
+                
+            </li>
+        </ul>
+    </div>    
+    
+    <div class="tab-content rt">
+
+        <div id="login" class="container tab-pane active"><br>
+            <h3>登录</h3>
+            <div>
+                <form action="." method="POST">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="userlogin">用户名</label>
+                        <input type="text" id="user-login" v-model="username" placeholder="请输入用户名">
+                    </div>
+                    <div class="form-group">
+                        <label for="pwd-login">密码</label>
+                        <input type="password" id="pwd-login" v-model="password" placeholder="请输入密码">
+                    </div>
+                    
+                </form>
+                <button type="submit" class="btn btn-primary" @click="login()">登录</button>
+            </div>
+        </div>
+
+        <div id="register" class="container tab-pane fade"><br>
+            <h3>注册</h3>
+            <div>
+                <form action="." method="POST">
+                        {% csrf_token %}
+                    <div class="form-group">
+                        <label for="user">用户名</label>
+                        <input type="text" id="user" v-model="username" placeholder="请输入用户名">
+                    </div>
+                    <div class="form-group">
+                        <label for="pwd">密码</label>
+                        <input type="password" id="pwd" v-model="password" placeholder="请输入密码">
+                    </div>
+                    <div class="form-group">
+                        <label for="pwd2">重复密码</label>
+                        <input type="password" id="pwd2" v-model="password2" placeholder="请重复输入密码">
+                    </div>
+                    <div class="form-group">
+                            <label for="email">邮箱</label>
+                            <input type="email" id="email" v-model="email" placeholder="请输入邮箱">
+                        </div>              
+                    <button type="submit" class="btn btn-primary">注册</button>
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+    <a href="{% url "api:news_list" %}" id="logintonews"></a>
+
+
+    <button type="submit" class="btn btn-primary" @click="login()">登录</button>
+    <!-- 模态框：用来弹出登录错误界面 -->           
+    <div class="modal fade" id="loginerror">
+            <div class="modal-dialog">
+                <div class="modal-content">
+
+                    <!-- 模态框头部 -->
+                    <div class="modal-header">
+                        <h4>登录错误</h4>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+
+                    <!-- 模态框主体 -->
+                    <div class="modal-body">
+                        用户名或密码错误
+                    </div>
+
+                    <!-- 模态框底部 -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                    </div>
+                </div>
+            </div>
+    </div>
+
+    <!-- <div>
+        <router-link to="/login">login</router-link>
+        <router-link to="/register">register</router-link>
+    </div>
+    <div>
+        <router-view></router-view>
+    </div> -->
+    
+    <template id="mylogin">
+        <div>
+            <form action="." method="POST">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="userlogin">用户名</label>
+                    <input type="text" id="user-login" v-model="username" placeholder="请输入用户名">
+                </div>
+                <div class="form-group">
+                    <label for="pwd-login">密码</label>
+                    <input type="password" id="pwd-login" v-model="password" placeholder="请输入密码">
+                </div>
+                <button type="submit" class="btn btn-primary" @click="login()">登录</button>
+            </form>
+        </div>
+    </template>
+
+    <template id="myregister">
+        <div>
+            <form action="." method="POST">
+                {% csrf_token %}
+            <div class="form-group">
+                <label for="user">用户名</label>
+                <input type="text" id="user" v-model="username" placeholder="请输入用户名">
+            </div>
+            <div class="form-group">
+                <label for="pwd">密码</label>
+                <input type="password" id="pwd" v-model="password" placeholder="请输入密码">
+            </div>
+            <div class="form-group">
+                <label for="pwd2">重复密码</label>
+                <input type="password" id="pwd2" v-model="password2" placeholder="请重复输入密码">
+            </div>
+            <div class="form-group">
+                    <label for="email">邮箱</label>
+                    <input type="email" id="email" v-model="email" placeholder="请输入邮箱">
+                </div>              
+            <button type="submit" class="btn btn-primary">注册</button>
+        </form>
+        </div>
+    </template>
+
+</div>
+
+{% endblock %}
+
+{% block footer %}
+    <script>
+        //1 创建组件
+        const MyLogin = Vue.extend({
+            template:"#mylogin",
+        });
+        const MyRegister = Vue.extend({
+            template: "#myregister",
+        });
+
+        //2 配置路由
+        const routes = [
+            { path: "/login", component: MyLogin },
+            { path: "/register", component: MyRegister },
+        ];
+
+        // 3 创建路由实例
+        const router = new VueRouter({
+            routes
+        });
+
+        // 4 挂载到vue实例上
+        // var rr = new Vue({
+        //     router
+        // }).$mount("#app");
+
+        var test = new Vue({
+            el:"#app",
+            router:router,
+            data:{
+                users:[],
+                newuser:{username:'',password:null,password2:null,email:null},
+                loginshow:true,
+                modalshow:"nomodal",
+                cur_user:'',
+                username:'',
+                password:null,
+
+            },
+            methods: {
+                
+                getUserData(){
+                    var self = this;
+                    
+                    axios.get('/api/users_list/').then(
+                        function(response){
+                            console.log("response.data");
+                            
+
+                        }).catch(
+                            function(error){
+                                console.log(error);
+                            }
+                        )
+                },
+                login(){
+                    var self = this;
+                    
+                    // axios({
+                    //     url:'/api/token-auth',
+                    //     method:"post",
+                    //     data:{
+                    //         username:test.username,
+                    //         password:test.password
+                    //     }
+                    // }).then(
+                    //     function(response){
+                    //         console.log(response.data);
+                    //         console.log(response.data.token);
+                    //         Cookies.set('token',response.token);
+                    //         test.loginshow = false;
+
+                    //         setTimeout(function(){
+                    //            document.getElementById("logintonews").click()
+                    //            },5000);                        
+                    //     }).catch(
+                    //         function(error){
+                    //             console.log(error);
+                    //             alert("账号或者密码错误");
+                    //         }
+                    //     )
+                    console.log("已经执行了login");
+
+                    reqwest({
+                            url:'/api/token-auth',
+                            type:'json',
+                            method:'post',
+                            data:{
+                                username:test.username,
+                                password:test.password,
+                            },
+                            success:function (resp) {
+                                console.log(resp.token);
+                                Cookies.set('token',resp.token);
+                                Cookies.set("username",test.username);
+                                console.log("have success act");
+                                setTimeout(
+                                    function(){
+                                        document.getElementById("logintonews").click()
+                                    },1000)
+                            },
+                        })
+                    //是可行的
+                },
+
+
+                register(){
+
+                    if(this.newuser.username===''){
+                        alert("姓名不能为空");
+                        return;
+                    }
+
+                    if(this.newuser.email===''){
+                        alert("邮箱不能为空");
+                        return;
+                    }
+
+                    if(this.newuser.password===''){
+                        alert("密码不能为空");
+                        return;
+                    }
+
+                    if(this.newuser.password2===''){
+                        alert("密码不能为空");
+                        return;
+                    }
+
+                    if(this.newuser.password===this.newuser.password2){
+                        alert("两次密码不一致");
+                        return;
+                    }
+
+                    axios.post('/api/users_list/',{
+                        username:this.newuser.username,
+                        password:this.newuser.password,
+                        email:this.newuser.email,    
+                    }).then(
+                        function(response){
+                            console.log(response.data);
+                        }).catch(function(error){
+                            console.log(error);
+                        }
+                    )
+                }
+
+            }
+        })    
+    </script>
+{% endblock %}
+</html>
